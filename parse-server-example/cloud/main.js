@@ -215,8 +215,8 @@ Parse.Cloud.afterSave("Game", function(request) {
         query.equalTo("topic", request.object.get("topic"));
         console.log("Game start savin");
         query.find({
+          useMasterKey: true,
           success: function(results) {
-                alert("Successfully retrieved " + results.length + " scores.");
                 // Do something with the returned Parse.Object values
                 questions = shuffle(results);
 
@@ -227,6 +227,7 @@ Parse.Cloud.afterSave("Game", function(request) {
             round.set("isFinished", false);
             round.set("game", request.object);
             round.save(null, {
+              useMasterKey: true,
               success: function(round) {
                 console.log("Round save: " + round);
 
@@ -248,20 +249,15 @@ Parse.Cloud.afterSave("Game", function(request) {
               },
               error: function(round, error) {
                 console.log("Round save error: " + error);
-              },
-              useMasterKey: true
+              }
             });
 
         }
           },
           error: function(error) {
             console.log("Game error:" + error);
-          },
-          useMasterKey: true
+          }
         });
-
-
-
     }
 });
 
