@@ -12,7 +12,7 @@ if (!databaseUri) {
 }
 
 var api = new ParseServer({
-  databaseURI: databaseUri || 'mongodb://46.101.197.237:27017/medquiz-prod-db',
+  databaseURI: databaseUri || 'mongodb://localhost/medquiz-prod-db',
   cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
   appId: process.env.APP_ID || 'quizmedup',
   masterKey: process.env.MASTER_KEY || '', //Add your master key here. Keep it secret!
