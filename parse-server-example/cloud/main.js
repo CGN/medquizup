@@ -1,5 +1,11 @@
+
+Parse.Cloud.define('hello', function(req, res) {
+  res.success('Hi');
+});
+
+
 Parse.Cloud.afterSave("Answer", function(request) {
-  Parse.Cloud.useMasterKey();
+  //Parse.Cloud.useMasterKey();
   var DailyScore = Parse.Object.extend("DailyScore");
   var Question = Parse.Object.extend("Question");
   var UserScore = Parse.Object.extend("UserScore");
@@ -44,7 +50,8 @@ Parse.Cloud.afterSave("Answer", function(request) {
           },
           error: function(error) {
             console.log("Error: " + error + " " + error.message);
-          }
+          },
+          useMasterKey: true
       });
 
 
@@ -85,7 +92,8 @@ Parse.Cloud.afterSave("Answer", function(request) {
                 },
                 error: function(error) {
 
-                }
+                },
+              useMasterKey: true
               });
 
 
@@ -99,7 +107,8 @@ Parse.Cloud.afterSave("Answer", function(request) {
                 error: function(userScore, error) {
 
                 }
-              });
+              }, {useMasterKey:true}
+              );
             }
             else{
               console.log("object not exist");
@@ -120,7 +129,8 @@ Parse.Cloud.afterSave("Answer", function(request) {
                   },
                   error: function(object, error) {
 
-                  }
+                  },
+                  useMasterKey: true
                 });
               }
 
@@ -131,14 +141,15 @@ Parse.Cloud.afterSave("Answer", function(request) {
                 error: function(userScore, error) {
 
                 }
-              });
+              },{useMasterKey:true});
 
 
             }
           },
           error: function(error) {
             console.log("Error: " + error + " " + error.message);
-          }
+          },
+          useMasterKey: true
       });
 
     },
@@ -176,7 +187,8 @@ Parse.Cloud.afterSave("DailyScore", function(request) {
         },
         error: function(error) {
 
-        }
+        },
+        useMasterKey: true
     });
     request.object.get("user").fetch({
         success: function(object) {
@@ -185,7 +197,8 @@ Parse.Cloud.afterSave("DailyScore", function(request) {
         },
         error: function(object, error) {
 
-        }
+        },
+          useMasterKey: true
     });
   }
 });
@@ -232,14 +245,16 @@ Parse.Cloud.afterSave("Game", function(request) {
               },
               error: function(round, error) {
 
-              }
+              },
+              useMasterKey: true
             });
 
         }
           },
           error: function(error) {
             alert("Error: " + error.code + " " + error.message);
-          }
+          },
+          useMasterKey: true
         });
 
 
@@ -325,7 +340,8 @@ Parse.Cloud.afterSave("GameInvitation", function(request) {
 
         error: function(object, error) {
           // error is an instance of Parse.Error.
-        }
+        },
+        useMasterKey: true
     });
 
 
@@ -375,12 +391,13 @@ Parse.Cloud.afterSave("GameInvitation", function(request) {
 
         error: function(object, error) {
           // error is an instance of Parse.Error.
-        }
+        },
+        useMasterKey: true
     });
   }
 })
 Parse.Cloud.job("resetWeeklyRating", function(request, status) {
-  Parse.Cloud.useMasterKey();
+  // Parse.Cloud.useMasterKey();
   var User = Parse.Object.extend("_User");
   var query = new Parse.Query(User);
   query.limit(1000);
@@ -405,17 +422,18 @@ Parse.Cloud.job("resetWeeklyRating", function(request, status) {
             error: function(model, error) {
               status.error("Error: " + error + " " + error.message);
             }
-      });
+      },{useMasterKey:true});
 
     },
     error: function(error) {
       status.error("Error: " + error + " " + error.message);
-    }
+    },
+    useMasterKey: true
   });
 });
 Parse.Cloud.job("refreshWeeklyScore", function(request, status) {
 
-  Parse.Cloud.useMasterKey();
+  // Parse.Cloud.useMasterKey();
 
   var DailyScore = Parse.Object.extend("DailyScore");
   var query = new Parse.Query(DailyScore);
@@ -455,7 +473,8 @@ Parse.Cloud.job("refreshWeeklyScore", function(request, status) {
       },
       error: function(error) {
         status.error("Error: " + error + " " + error.message);
-      }
+      },
+      useMasterKey: true
   });
 });
 Parse.Cloud.afterSave("Question", function(request) {
@@ -471,7 +490,8 @@ Parse.Cloud.afterSave("Question", function(request) {
       },
       error: function(object, error) {
 
-      }
+      },
+      useMasterKey: true
     });
 });
 
@@ -496,7 +516,9 @@ Parse.Cloud.beforeDelete("Question", function(request, response) {
       error: function(error) {
         response.success();
       }
-    });
+    },
+    useMasterKey: true
+    );
 });
 Parse.Cloud.beforeSave("_User", function(request, response) {
   var user = request.object;
@@ -546,7 +568,8 @@ Parse.Cloud.beforeSave("UserScore", function(request, response) {
         },
         error: function(error) {
             response.error();
-        }
+        },
+        useMasterKey: true
     });
   }
   else{
