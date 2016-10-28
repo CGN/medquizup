@@ -1,0 +1,23 @@
+"_metadata" : {
+		"class_permissions" : {
+			"get" : {
+				"*" : true
+			},
+			"find" : {
+				"*" : true
+			},
+			"update" : {
+				"*" : true
+			},
+			"create" : {
+				"*" : true
+			},
+			"delete" : {
+				"*" : true
+			},
+			"addField" : {
+				"*" : true
+			},
+			"readUserFields" : [ ],
+			"writeUserFields" : [ ]
+		}
