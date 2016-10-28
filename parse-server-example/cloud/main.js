@@ -238,13 +238,13 @@ Parse.Cloud.afterSave("Game", function(request) {
 
                       } , error: function(roundQuestion, eroor){
 
-                      }, useMasterKey: true
+                      }, 
                       });
                 }
 
               },
               error: function(round, error) {
-
+                console.error("Round save error: " + error);
               },
               useMasterKey: true
             });
