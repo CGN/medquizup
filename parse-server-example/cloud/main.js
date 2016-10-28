@@ -107,7 +107,8 @@ Parse.Cloud.afterSave("Answer", function(request) {
                 error: function(userScore, error) {
 
                 }
-              });
+              }, {useMasterKey:true}
+              );
 	  				}
 	  				else{
 	  					console.log("object not exist");
@@ -129,7 +130,7 @@ Parse.Cloud.afterSave("Answer", function(request) {
                   error: function(object, error) {
 
                   },
-          useMasterKey: true
+                  useMasterKey: true
                 });
               }
 
@@ -140,7 +141,7 @@ Parse.Cloud.afterSave("Answer", function(request) {
   							error: function(userScore, error) {
 
 							  }
-						  });
+						  },{useMasterKey:true});
 
 
 	  				}
@@ -414,7 +415,7 @@ Parse.Cloud.job("resetWeeklyRating", function(request, status) {
 						error: function(model, error) {
 							status.error("Error: " + error + " " + error.message);
 						}
-			});
+			},{useMasterKey:true});
 
     },
     error: function(error) {
