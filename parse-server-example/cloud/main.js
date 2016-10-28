@@ -221,11 +221,13 @@ Parse.Cloud.afterSave("Game", function(request) {
 
                for(i = 0; i<3 ; i++){
             var round = new Round();
+            console.log("Round: started");
             round.set("roundNumber", i+1);
             round.set("isFinished", false);
             round.set("game", request.object);
             round.save(null, {
               success: function(round) {
+                console.log("Round save: " + round);
 
                 for(var j =0; j<6; j++){
                       var RoundQuestion = Parse.Object.extend("RoundQuestion");
@@ -244,7 +246,7 @@ Parse.Cloud.afterSave("Game", function(request) {
 
               },
               error: function(round, error) {
-                console.error("Round save error: " + error);
+                console.log("Round save error: " + error);
               },
               useMasterKey: true
             });
