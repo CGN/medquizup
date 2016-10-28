@@ -213,6 +213,7 @@ Parse.Cloud.afterSave("Game", function(request) {
         var Question = Parse.Object.extend("Question");
         var query = new Parse.Query(Question);
         query.equalTo("topic", request.object.get("topic"));
+        console.log("Game start savin");
         query.find({
           success: function(results) {
                 alert("Successfully retrieved " + results.length + " scores.");
@@ -254,7 +255,7 @@ Parse.Cloud.afterSave("Game", function(request) {
         }
           },
           error: function(error) {
-            alert("Error: " + error.code + " " + error.message);
+            console.log("Game error:" + error);
           },
           useMasterKey: true
         });
