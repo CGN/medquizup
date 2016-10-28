@@ -5,7 +5,7 @@ Parse.Cloud.define('hello', function(req, res) {
 
 
 Parse.Cloud.afterSave("Answer", function(request) {
-	Parse.Cloud.useMasterKey();
+	//Parse.Cloud.useMasterKey();
 	var DailyScore = Parse.Object.extend("DailyScore");
 	var Question = Parse.Object.extend("Question");
 	var UserScore = Parse.Object.extend("UserScore");
@@ -50,7 +50,8 @@ Parse.Cloud.afterSave("Answer", function(request) {
 		  		},
 		  		error: function(error) {
 		   			console.log("Error: " + error + " " + error.message);
-		  		}
+		  		},
+          useMasterKey: true
 			});
 
 
@@ -91,7 +92,8 @@ Parse.Cloud.afterSave("Answer", function(request) {
 							  },
 								error: function(error) {
 
-								}
+								},
+            useMasterKey: true
 							});
 
 
@@ -126,7 +128,8 @@ Parse.Cloud.afterSave("Answer", function(request) {
                   },
                   error: function(object, error) {
 
-                  }
+                  },
+          useMasterKey: true
                 });
               }
 
@@ -386,7 +389,7 @@ Parse.Cloud.afterSave("GameInvitation", function(request) {
   }
 })
 Parse.Cloud.job("resetWeeklyRating", function(request, status) {
-	Parse.Cloud.useMasterKey();
+	// Parse.Cloud.useMasterKey();
   var User = Parse.Object.extend("_User");
   var query = new Parse.Query(User);
   query.limit(1000);
@@ -416,12 +419,13 @@ Parse.Cloud.job("resetWeeklyRating", function(request, status) {
     },
     error: function(error) {
 			status.error("Error: " + error + " " + error.message);
-    }
+    },
+          useMasterKey: true
   });
 });
 Parse.Cloud.job("refreshWeeklyScore", function(request, status) {
 
-	Parse.Cloud.useMasterKey();
+	// Parse.Cloud.useMasterKey();
 
 	var DailyScore = Parse.Object.extend("DailyScore");
 	var query = new Parse.Query(DailyScore);
@@ -461,7 +465,8 @@ Parse.Cloud.job("refreshWeeklyScore", function(request, status) {
   		},
   		error: function(error) {
     		status.error("Error: " + error + " " + error.message);
-  		}
+  		},
+          useMasterKey: true
 	});
 });
 Parse.Cloud.afterSave("Question", function(request) {
