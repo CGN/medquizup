@@ -32,7 +32,7 @@ Parse.Cloud.afterSave("Answer", function(request) {
             if(object){
               object.increment("score", request.object.get("score"));
 
-              object.save();
+              object.save(null, { useMasterKey: true });
             }
             else{
               console.log("DailScore not exist");
@@ -43,7 +43,7 @@ Parse.Cloud.afterSave("Answer", function(request) {
               dailyScore.set("isActive", true);
               // dailyScore.save();
 
-              dailyScore.save();
+              dailyScore.save(null, { useMasterKey: true });
 
 
             }
@@ -81,7 +81,7 @@ Parse.Cloud.afterSave("Answer", function(request) {
 
                         success: function(user) {
                           user.increment("answerCount", +1);
-                          user.save()
+                          user.save(null, { useMasterKey: true });
                         },
                         error: function(object, error) {
 
@@ -107,7 +107,7 @@ Parse.Cloud.afterSave("Answer", function(request) {
                 error: function(userScore, error) {
 
                 }
-              }, {useMasterKey:true}
+              , useMasterKey:true}
               );
             }
             else{
@@ -125,7 +125,7 @@ Parse.Cloud.afterSave("Answer", function(request) {
 
                   success: function(user) {
                     user.increment("answerCount", +1);
-                    user.save()
+                    user.save(null, { useMasterKey: true });
                   },
                   error: function(object, error) {
 
@@ -141,7 +141,7 @@ Parse.Cloud.afterSave("Answer", function(request) {
                 error: function(userScore, error) {
 
                 }
-              },{useMasterKey:true});
+              ,useMasterKey:true});
 
 
             }
@@ -162,7 +162,7 @@ Parse.Cloud.afterSave("Answer", function(request) {
       success: function(object) {
         object.increment("totalScore", request.object.get("score"));
         object.increment("weeklyScore", request.object.get("score"));
-        object.save()
+        object.save(null, { useMasterKey: true });
       },
       error: function(object, error) {
         console.log("Error: " + error + " " + error.message);
@@ -193,7 +193,7 @@ Parse.Cloud.afterSave("DailyScore", function(request) {
     request.object.get("user").fetch({
         success: function(object) {
           object.increment("weeklyScore",-1 * request.object.get("score"));
-          object.save()
+          object.save(null, { useMasterKey: true });
         },
         error: function(object, error) {
 
@@ -238,7 +238,7 @@ Parse.Cloud.afterSave("Game", function(request) {
 
                       } , error: function(roundQuestion, eroor){
 
-                      }
+                      }, useMasterKey: true
                       });
                 }
 
@@ -334,7 +334,8 @@ Parse.Cloud.afterSave("GameInvitation", function(request) {
               },
               error: function(error) {
                   console.log("Error occured");
-              }
+              },
+              useMasterKey: true
             });
         },
 
@@ -385,7 +386,8 @@ Parse.Cloud.afterSave("GameInvitation", function(request) {
               },
               error: function(error) {
                   console.log("Error occured");
-              }
+              },
+              useMasterKey: true
             });
         },
 
@@ -422,7 +424,7 @@ Parse.Cloud.job("resetWeeklyRating", function(request, status) {
             error: function(model, error) {
               status.error("Error: " + error + " " + error.message);
             }
-      },{useMasterKey:true});
+      ,useMasterKey:true});
 
     },
     error: function(error) {
@@ -516,8 +518,8 @@ Parse.Cloud.beforeDelete("Question", function(request, response) {
       error: function(error) {
         response.success();
       }
-    },
-    useMasterKey: true
+    ,
+    useMasterKey: true}
     );
 });
 Parse.Cloud.beforeSave("_User", function(request, response) {
