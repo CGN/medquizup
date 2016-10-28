@@ -1,100 +1,92 @@
-
-Parse.Cloud.define('hello', function(req, res) {
-  res.success('Hi');
-});
-
-
 Parse.Cloud.afterSave("Answer", function(request) {
-	//Parse.Cloud.useMasterKey();
-	var DailyScore = Parse.Object.extend("DailyScore");
-	var Question = Parse.Object.extend("Question");
-	var UserScore = Parse.Object.extend("UserScore");
+  Parse.Cloud.useMasterKey();
+  var DailyScore = Parse.Object.extend("DailyScore");
+  var Question = Parse.Object.extend("Question");
+  var UserScore = Parse.Object.extend("UserScore");
 
-	var questionQuery = new Parse.Query(Question);
+  var questionQuery = new Parse.Query(Question);
 
-	questionQuery.get(request.object.get("question").id, {
-		success: function(question) {
+  questionQuery.get(request.object.get("question").id, {
+    success: function(question) {
 
-			var query = new Parse.Query(DailyScore);
-			var date = request.object.get("createdAt");
+      var query = new Parse.Query(DailyScore);
+      var date = request.object.get("createdAt");
 
-			date.setHours(0,0,0,0)
-			query.greaterThan("createdAt", date);
+      date.setHours(0,0,0,0)
+      query.greaterThan("createdAt", date);
 
-			date.setHours(23, 59, 0, 0);
-			query.lessThan("createdAt", date);
+      date.setHours(23, 59, 0, 0);
+      query.lessThan("createdAt", date);
 
-			query.equalTo("user",request.object.get("user"));
-			query.equalTo("topic",question.get("topic"));
+      query.equalTo("user",request.object.get("user"));
+      query.equalTo("topic",question.get("topic"));
 
-			query.first({
-		  		success: function(object) {
-		  			if(object){
-		  				object.increment("score", request.object.get("score"));
+      query.first({
+          success: function(object) {
+            if(object){
+              object.increment("score", request.object.get("score"));
 
               object.save();
-		  			}
-		  			else{
-		  				console.log("DailScore not exist");
-		  				var dailyScore = new DailyScore();
-		  				dailyScore.set("score", request.object.get("score"));
-		  				dailyScore.set("topic", question.get("topic"));
-		  				dailyScore.set("user", request.object.get("user"));
-		  				dailyScore.set("isActive", true);
-		  				// dailyScore.save();
+            }
+            else{
+              console.log("DailScore not exist");
+              var dailyScore = new DailyScore();
+              dailyScore.set("score", request.object.get("score"));
+              dailyScore.set("topic", question.get("topic"));
+              dailyScore.set("user", request.object.get("user"));
+              dailyScore.set("isActive", true);
+              // dailyScore.save();
 
-		  				dailyScore.save();
-
-
-		  			}
-		  		},
-		  		error: function(error) {
-		   			console.log("Error: " + error + " " + error.message);
-		  		},
-          useMasterKey: true
-			});
+              dailyScore.save();
 
 
+            }
+          },
+          error: function(error) {
+            console.log("Error: " + error + " " + error.message);
+          }
+      });
 
-			var query1 = new Parse.Query(UserScore)
-			query1.equalTo("topic",question.get("topic"));
+
+
+      var query1 = new Parse.Query(UserScore)
+      query1.equalTo("topic",question.get("topic"));
       query1.equalTo("user", request.object.get("user"))
 
-			query1.first({
-	  			success: function(object) {
+      query1.first({
+          success: function(object) {
 
-	  				if(object){
-	  					object.increment("totalScore", request.object.get("score"));
-	  					object.increment("weeklyScore", request.object.get("score"));
+            if(object){
+              object.increment("totalScore", request.object.get("score"));
+              object.increment("weeklyScore", request.object.get("score"));
 
-							var ansQuery = new Parse.Query(Answer);
-							ansQuery.equalTo("user", request.object.get("user"));
-							ansQuery.equalTo("question", question);
-							ansQuery.count({
-								success: function(number) {
-									if (number == 0){
-										if (request.object.get("score") > 0){
-											object.increment("answerCount", +1);
+              var ansQuery = new Parse.Query(Answer);
+              ansQuery.equalTo("user", request.object.get("user"));
+              ansQuery.equalTo("question", question);
+              ansQuery.count({
+                success: function(number) {
+                  if (number == 0){
+                    if (request.object.get("score") > 0){
+                      object.increment("answerCount", +1);
 
-											var userQuery = new Parse.Query("_User");
-											userQuery.get(request.object.get("user").id, {
+                      var userQuery = new Parse.Query("_User");
+                      userQuery.get(request.object.get("user").id, {
 
-												success: function(user) {
-													user.increment("answerCount", +1);
-													user.save()
-												},
-												error: function(object, error) {
+                        success: function(user) {
+                          user.increment("answerCount", +1);
+                          user.save()
+                        },
+                        error: function(object, error) {
 
-												}
-											});
-										}
-									}
-							  },
-								error: function(error) {
+                        }
+                      });
+                    }
+                  }
+                },
+                error: function(error) {
 
-								},
-              useMasterKey: true
-							});
+                }
+              });
 
 
 
@@ -107,17 +99,16 @@ Parse.Cloud.afterSave("Answer", function(request) {
                 error: function(userScore, error) {
 
                 }
-              }, {useMasterKey:true}
-              );
-	  				}
-	  				else{
-	  					console.log("object not exist");
+              });
+            }
+            else{
+              console.log("object not exist");
 
-	  					var userScore = new UserScore();
-	  					userScore.set("totalScore", request.object.get("score"));
-	  					userScore.set("weeklyScore", request.object.get("score"));
-	  					userScore.set("user", request.object.get("user"));
-	  					userScore.set("topic", question.get("topic"));
+              var userScore = new UserScore();
+              userScore.set("totalScore", request.object.get("score"));
+              userScore.set("weeklyScore", request.object.get("score"));
+              userScore.set("user", request.object.get("user"));
+              userScore.set("topic", question.get("topic"));
               if (request.object.get("score") > 0){
                 userScore.set("answerCount", 1);
                 var userQuery = new Parse.Query("_User");
@@ -129,78 +120,74 @@ Parse.Cloud.afterSave("Answer", function(request) {
                   },
                   error: function(object, error) {
 
-                  },
-                  useMasterKey: true
+                  }
                 });
               }
 
-	  					userScore.save(null, {
-  							success: function(userScore) {
-  								console.log("userScore saved");
-    						},
-  							error: function(userScore, error) {
+              userScore.save(null, {
+                success: function(userScore) {
+                  console.log("userScore saved");
+                },
+                error: function(userScore, error) {
 
-							  }
-						  },{useMasterKey:true});
+                }
+              });
 
 
-	  				}
-	  			},
-	  			error: function(error) {
-	   				console.log("Error: " + error + " " + error.message);
-	  			},
-          useMasterKey: true
-			});
+            }
+          },
+          error: function(error) {
+            console.log("Error: " + error + " " + error.message);
+          }
+      });
 
-		},
-	  	error: function(question, error) {
-	    	console.log("Error: " + error + " " + error.message);
-	  	}
-	});
+    },
+      error: function(question, error) {
+        console.log("Error: " + error + " " + error.message);
+      }
+  });
 
-	request.object.get("user").fetch({
-  		success: function(object) {
-    		object.increment("totalScore", request.object.get("score"));
-    		object.increment("weeklyScore", request.object.get("score"));
-    		object.save()
-  		},
-  		error: function(object, error) {
-    		console.log("Error: " + error + " " + error.message);
-  		}
-	});
+  request.object.get("user").fetch({
+      success: function(object) {
+        object.increment("totalScore", request.object.get("score"));
+        object.increment("weeklyScore", request.object.get("score"));
+        object.save()
+      },
+      error: function(object, error) {
+        console.log("Error: " + error + " " + error.message);
+      }
+  });
 });
 Parse.Cloud.afterSave("DailyScore", function(request) {
 
-	if (!request.object.get("isActive")) {
+  if (!request.object.get("isActive")) {
 
-		var UserScore = Parse.Object.extend("UserScore");
-		query.equalTo("user",request.object.get("user"));
-		query.equalTo("topic",request.object.get("topic"));
-		query.first({
-  			success: function(object) {
-  				if(object){
-  					object.increment("weeklyScore", -1 * request.object.get("score"));
-  				}
-  				else{
+    var UserScore = Parse.Object.extend("UserScore");
+    query.equalTo("user",request.object.get("user"));
+    query.equalTo("topic",request.object.get("topic"));
+    query.first({
+        success: function(object) {
+          if(object){
+            object.increment("weeklyScore", -1 * request.object.get("score"));
+          }
+          else{
 
-  				}
-  			},
-  			error: function(error) {
+          }
+        },
+        error: function(error) {
 
-  			},
-        useMasterKey: true
-		});
-		request.object.get("user").fetch({
-  			success: function(object) {
-    			object.increment("weeklyScore",-1 * request.object.get("score"));
-    			object.save()
-  			},
-  			error: function(object, error) {
+        }
+    });
+    request.object.get("user").fetch({
+        success: function(object) {
+          object.increment("weeklyScore",-1 * request.object.get("score"));
+          object.save()
+        },
+        error: function(object, error) {
 
-  			},
-          useMasterKey: true
-		});
-	}
+        }
+    });
+  }
 });
 Parse.Cloud.afterSave("Game", function(request) {
     var Round = Parse.Object.extend("Round");
@@ -245,16 +232,14 @@ Parse.Cloud.afterSave("Game", function(request) {
               },
               error: function(round, error) {
 
-              },
-              useMasterKey: true
+              }
             });
 
         }
           },
           error: function(error) {
             alert("Error: " + error.code + " " + error.message);
-          },
-          useMasterKey: true
+          }
         });
 
 
@@ -340,8 +325,7 @@ Parse.Cloud.afterSave("GameInvitation", function(request) {
 
         error: function(object, error) {
           // error is an instance of Parse.Error.
-        },
-        useMasterKey: true
+        }
     });
 
 
@@ -391,13 +375,12 @@ Parse.Cloud.afterSave("GameInvitation", function(request) {
 
         error: function(object, error) {
           // error is an instance of Parse.Error.
-        },
-        useMasterKey: true
+        }
     });
   }
 })
 Parse.Cloud.job("resetWeeklyRating", function(request, status) {
-	// Parse.Cloud.useMasterKey();
+  Parse.Cloud.useMasterKey();
   var User = Parse.Object.extend("_User");
   var query = new Parse.Query(User);
   query.limit(1000);
@@ -405,77 +388,75 @@ Parse.Cloud.job("resetWeeklyRating", function(request, status) {
   query.find({
     success: function(results) {
 
-			var list = []
-			for (var i = 0; i < results.length; i++){
-				var object = results[i];
-				object.set("weeklyScore", 0);
-				if (object.get("answerCount") > 50){
-					object.set("answerCount", 50);
-				}
-				list.push(object)
-			}
+      var list = []
+      for (var i = 0; i < results.length; i++){
+        var object = results[i];
+        object.set("weeklyScore", 0);
+        if (object.get("answerCount") > 50){
+          object.set("answerCount", 50);
+        }
+        list.push(object)
+      }
 
-			Parse.Object.saveAll(list, {
-						success: function(userList) {
-							status.success();
-						},
-						error: function(model, error) {
-							status.error("Error: " + error + " " + error.message);
-						}
-			},{useMasterKey:true});
+      Parse.Object.saveAll(list, {
+            success: function(userList) {
+              status.success();
+            },
+            error: function(model, error) {
+              status.error("Error: " + error + " " + error.message);
+            }
+      });
 
     },
     error: function(error) {
-			status.error("Error: " + error + " " + error.message);
-    },
-    useMasterKey: true
+      status.error("Error: " + error + " " + error.message);
+    }
   });
 });
 Parse.Cloud.job("refreshWeeklyScore", function(request, status) {
 
-	// Parse.Cloud.useMasterKey();
+  Parse.Cloud.useMasterKey();
 
-	var DailyScore = Parse.Object.extend("DailyScore");
-	var query = new Parse.Query(DailyScore);
+  var DailyScore = Parse.Object.extend("DailyScore");
+  var query = new Parse.Query(DailyScore);
 
-	var today = new Date()
-	today.setHours(0,0,0,0)
+  var today = new Date()
+  today.setHours(0,0,0,0)
 
-	var date1 = new Date()
-	date1.setDate(today.getDate() - 7);
+  var date1 = new Date()
+  date1.setDate(today.getDate() - 7);
 
-	var date2 = new Date()
-	date2.setDate(today.getDate() - 6);
+  var date2 = new Date()
+  date2.setDate(today.getDate() - 6);
 
 
-	query.greaterThan("createdAt", date1);
-	query.lessThan("createdAt", date2);
+  query.greaterThan("createdAt", date1);
+  query.lessThan("createdAt", date2);
 
-	query.find({
-  		success: function(results) {
+  query.find({
+      success: function(results) {
 
-  			var list = []
+        var list = []
 
-  			for (var i = 0; i < results.length; i++){
-  				var object = results[i];
-  				object.set("isActive", false)
-  				list.push(object)
-  			}
+        for (var i = 0; i < results.length; i++){
+          var object = results[i];
+          object.set("isActive", false)
+          list.push(object)
+        }
 
-  			Parse.Object.saveAll(list, {
-            	success: function(list) {
-            		status.success('Successfully completed');
-            	},
-            	error: function(model, error) {
-            		status.error("Error: " + error + " " + error.message);
-            	}
-     		});
-  		},
-  		error: function(error) {
-    		status.error("Error: " + error + " " + error.message);
-  		},
-      useMasterKey: true
-	});
+        Parse.Object.saveAll(list, {
+              success: function(list) {
+                status.success('Successfully completed');
+              },
+              error: function(model, error) {
+                status.error("Error: " + error + " " + error.message);
+              }
+        });
+      },
+      error: function(error) {
+        status.error("Error: " + error + " " + error.message);
+      }
+  });
 });
 Parse.Cloud.afterSave("Question", function(request) {
 
@@ -490,8 +471,7 @@ Parse.Cloud.afterSave("Question", function(request) {
       },
       error: function(object, error) {
 
-      },
-      useMasterKey: true
+      }
     });
 });
 
@@ -516,9 +496,7 @@ Parse.Cloud.beforeDelete("Question", function(request, response) {
       error: function(error) {
         response.success();
       }
-    },
-    useMasterKey: true
-    );
+    });
 });
 Parse.Cloud.beforeSave("_User", function(request, response) {
   var user = request.object;
@@ -568,8 +546,7 @@ Parse.Cloud.beforeSave("UserScore", function(request, response) {
         },
         error: function(error) {
             response.error();
-        },
-        useMasterKey: true
+        }
     });
   }
   else{
