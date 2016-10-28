@@ -15,7 +15,7 @@ var api = new ParseServer({
   databaseURI: databaseUri || 'mongodb://localhost/medquiz-prod-db',
   cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
   appId: process.env.APP_ID || 'quizmedup',
-  masterKey: process.env.MASTER_KEY || '', //Add your master key here. Keep it secret!
+  masterKey: process.env.MASTER_KEY || 'master', //Add your master key here. Keep it secret!
   serverURL: process.env.SERVER_URL || 'http://46.101.197.237:1337/parse'  // Don't forget to change to https if needed
   // liveQuery: {
   //   classNames: ["Posts", "Comments"] // List of classes to support for query subscriptions
